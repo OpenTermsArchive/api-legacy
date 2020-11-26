@@ -56,7 +56,7 @@ class CGUsFirstOccurenceParser(CGUsParser):
 
     def __init__(self, path, term):
         super().__init__(path)
-        self.regex_term = re.compile(rf"{term}")
+        self.regex_term = re.compile(rf"{term}", re.IGNORECASE)
     
     def run(self):
         """

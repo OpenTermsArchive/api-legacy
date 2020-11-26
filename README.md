@@ -2,6 +2,12 @@
 
 ## Get Started
 
+### Endpoints
+
+So far the API has two endpoints:
+- `/first_occurence/v1/{term}` returns the first occurence of a given term for each "service" / "document_type" pair
+- `/` and `/docs` is automatically generated documentation
+
 ### Running with Docker
 
 The easiest option if you have Docker installed as it will automatically download the data for you.

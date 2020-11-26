@@ -44,7 +44,7 @@ class CGUsParser(ABC):
             Given a file path in the CGUs dataset,
             return the service, the document_type, and the version date
         """
-        version_date = datetime.fromisoformat(file_path.name.removesuffix(".md"))
+        version_date = datetime.fromisoformat(file_path.name.rstrip(".md"))
         service, document_type = file_path.as_posix().split("/")[-3:-1]
         return service, document_type, version_date
 
@@ -72,7 +72,7 @@ class CGUsFirstOccurenceParser(CGUsParser):
                 self.output[service] = {document_type: False}
 
             if document_type not in self.output[service].keys():
-                self.output[service] |= {document_type: False}
+                self.output[service] = {**self.output[service], **{document_type: False}}
 
             if self._file_contains(md):
                 if not self.output[service][document_type]:

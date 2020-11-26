@@ -4,6 +4,8 @@ from datetime import datetime
 from pathlib import Path, PosixPath
 import re
 
+from config import DATASET_DATE_FORMAT
+
 class CGUsDataset():
     """
     Helper class for handling CGUs Versions
@@ -44,7 +46,7 @@ class CGUsParser(ABC):
             Given a file path in the CGUs dataset,
             return the service, the document_type, and the version date
         """
-        version_date = datetime.fromisoformat(file_path.name.rstrip(".md"))
+        version_date = datetime.strptime(file_path.name.rstrip(".md"), DATASET_DATE_FORMAT)
         service, document_type = file_path.as_posix().split("/")[-3:-1]
         return service, document_type, version_date
 

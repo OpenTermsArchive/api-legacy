@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from collections import defaultdict
 from datetime import datetime
 from pathlib import Path, PosixPath
 import re
@@ -54,20 +53,19 @@ class CGUsParser(ABC):
 
 class CGUsFirstOccurenceParser(CGUsParser):
 
-    def __init__(self, path, term):
+    def __init__(self, path, terms):
         super().__init__(path)
-        self.regex_term = re.compile(rf"{term}", re.IGNORECASE)
+        self.regex_term = re.compile(rf"{self._to_regex(terms)}", re.IGNORECASE)
     
     def run(self):
         """
             For each service provider, and for each document type,
-            return date of first occurence of a given term, or `False`
+            return date of first occurence of a given term (or comma-separated terms), or `False`
         """
-        self.output = defaultdict(lambda val: val)
+        self.output = dict()
 
         for md in self.dataset.yield_all_md(ignore_rootdir=True):
             service, document_type, version_date = self._parse_name(md)
-            print(f"Handling {service} {document_type} {version_date}")
             
             # TODO: clean and optimize this
             if service not in self.output.keys():
@@ -92,6 +90,16 @@ class CGUsFirstOccurenceParser(CGUsParser):
                 if self.regex_term.search(line):
                     return True
         return False
+
+    @staticmethod
+    def _to_regex(comma_separated_terms: str):
+        """
+            Given a string of comma-separated terms,
+            returns a Regex matching any of these terms.
+            "hello,world,California Act" --> "hello|world|California Act"
+        """
+        return comma_separated_terms.replace(",", "|")
+
 
 
 

@@ -129,3 +129,4 @@ dmypy.json
 
 # explo notebooks
 notebooks/EXPLO_*
+dataset*

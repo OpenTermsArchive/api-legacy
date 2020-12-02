@@ -23,6 +23,8 @@ The API is served at `localhost`.
 
 This API was built using `python3.8`. We suggest you use a virtual environment.
 
+You will also need a local copy of the dataset. By default, it is assumed to be in `./app/dataset` but you can always change this by editing `./app/config.py`.
+
 Install requirements
 
 ```sh
@@ -36,5 +38,3 @@ cd app
 export PYTHONPATH=.
 uvicorn main:app --reload
 ```
-
-Note: you might need to edit `config.py` to give it the path to your local copy of the dataset.

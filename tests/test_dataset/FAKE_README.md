@@ -1,0 +1,1 @@
+This README file is here to test the `ignore_rootdir` functionality of the file parser.

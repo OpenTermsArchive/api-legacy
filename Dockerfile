@@ -9,4 +9,5 @@ RUN curl -LJS https://github.com/ambanum/CGUs-versions/releases/download/2020-11
 RUN apt-get install unzip -y
 RUN unzip dataset.zip && mv dataset-2020-11-23-16e3f34 dataset
 
+ENV CGUS_API_ENV production
 COPY ./app /app

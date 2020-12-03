@@ -26,3 +26,5 @@
     restart: yes
     ports:
     - "{{ app_port }}:80"
+    env:
+      CGUS_API_ENV: "production"

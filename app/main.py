@@ -10,12 +10,12 @@ from config import CGUS_DATASET_PATH, RATE_LIMIT, BASE_PATH
 from dataset_parser import CGUsFirstOccurenceParser
 
 limiter = Limiter(key_func=get_remote_address)
-app = FastAPI(openapi_url=f"{BASE_PATH}/openapi.json")
+app = FastAPI(openapi_url=f"{BASE_PATH}/openapi.json", docs_url=f"{BASE_PATH}/docs")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
-@app.get("/")
+@app.get(f"{BASE_PATH}/")
 @limiter.limit(RATE_LIMIT)
 async def index(request: Request):
     return RedirectResponse(f"{BASE_PATH}/docs")

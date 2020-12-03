@@ -23,4 +23,5 @@ jobs:
     - run: echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > vault.key
     - run: pip install --upgrade setuptools
     - run: pip install ansible==2.9.11
+    - run: ansible-galaxy collection install community.general
     - run: ansible-playbook ops/site.yml -i ops/inventories/production.yml

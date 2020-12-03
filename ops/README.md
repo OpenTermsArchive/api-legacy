@@ -7,6 +7,7 @@ Recipes to set up the infrastructure for the CGUs-api app and deploy it.
 ## Requirements
 
 - Install [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+- `ansible-galaxy collection install community.general`
 
 ### [For developement only] Additional dependencies
 

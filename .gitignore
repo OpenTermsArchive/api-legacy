@@ -133,3 +133,5 @@ dataset*
 
 .DS_Store
 vault.key
+
+.vagrant

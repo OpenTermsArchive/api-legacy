@@ -20,7 +20,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 async def index(request: Request):
     return RedirectResponse(f"{BASE_PATH}/docs")
 
-@app.get(f"{BASE_PATH}/first_occurence/v1/{term}")
+@app.get(f"{BASE_PATH}/first_occurence/v1/{{term}}")
 @limiter.limit(RATE_LIMIT)
 async def first_occurence(request: Request, term: str):
     parser = CGUsFirstOccurenceParser(Path(CGUS_DATASET_PATH), term)

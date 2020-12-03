@@ -1,0 +1,6 @@
+---
+- name: Setup CGUs-api
+  hosts: all
+
+  roles:
+    - cgus-api

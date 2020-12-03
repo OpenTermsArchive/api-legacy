@@ -130,3 +130,6 @@ dmypy.json
 # explo notebooks
 notebooks/EXPLO_*
 dataset*
+
+.DS_Store
+vault.key

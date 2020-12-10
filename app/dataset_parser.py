@@ -101,3 +101,39 @@ class CGUsFirstOccurenceParser(CGUsParser):
 
     def to_dict(self):
         return self.output
+
+class CGUsAllOccurencesParser(CGUsParser):
+
+    def __init__(self, path, terms):
+        super().__init__(path)
+        self.regex_term = re.compile(
+            rf"{self._to_regex(terms)}", re.IGNORECASE)
+
+    def run(self):
+        """
+            For each service provider, and for each document type,
+            return date of first occurence of a given term (or comma-separated terms), or `False`
+        """
+        self.output = dict()
+
+        for md in self.dataset.yield_all_md(ignore_rootdir=True):
+            service, document_type, version_date = self._parse_name(md)
+
+
+            # TODO: clean and optimize this
+            if service not in self.output.keys():
+                self.output[service] = {
+                    document_type: {
+                        version_date: False
+                    }
+                }
+
+            if document_type not in self.output[service].keys():
+                self.output[service] = {
+                    **self.output[service], **{document_type: {version_date: False}}
+                }
+
+            self.output[service][document_type][version_date] = self._file_contains(md)
+
+    def to_dict(self):
+        return self.output

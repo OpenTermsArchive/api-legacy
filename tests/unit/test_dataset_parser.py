@@ -5,9 +5,10 @@ sys.path.append("./app/")
 
 import pytest
 
-from app.dataset_parser import CGUsDataset, CGUsFirstOccurenceParser
+from app.dataset_parser import CGUsDataset, CGUsFirstOccurenceParser, CGUsAllOccurencesParser
 
 # test CGUsDataset
+
 
 def test_path_check_ok():
     cgudataset = CGUsDataset(root_path="tests/test_dataset/")
@@ -56,3 +57,38 @@ def test_run_not_found():
     parser.run()
     output = parser.to_dict()
     assert output["FakeService"]["Community Guidelines"] == False
+
+
+# test CGUsAllOccurencesParser
+
+
+def test_run_california_all():
+    parser = CGUsAllOccurencesParser(Path("tests/test_dataset"), "California")
+    parser.run()
+    output = parser.to_dict()
+    assert set(output.keys()) == {"FakeService"}
+    assert set(output["FakeService"].keys()) == {"Community Guidelines"}
+    print(output["FakeService"]["Community Guidelines"])
+    assert output["FakeService"]["Community Guidelines"][datetime(
+        2020, 11, 9, 17, 30, 22)] == True
+    assert output["FakeService"]["Community Guidelines"][datetime(
+        2020, 11, 11, 16, 30, 22)] == True
+
+def test_run_rgpd_all():
+    parser = CGUsAllOccurencesParser(Path("tests/test_dataset"), "rgpd")
+    parser.run()
+    output = parser.to_dict()
+    assert output["FakeService"]["Community Guidelines"][datetime(
+        2020, 11, 9, 17, 30, 22)] == False
+    assert output["FakeService"]["Community Guidelines"][datetime(
+        2020, 11, 11, 16, 30, 22)] == True
+
+
+def test_run_not_found_all():
+    parser = CGUsAllOccurencesParser(Path("tests/test_dataset"), "Ambanum")
+    parser.run()
+    output = parser.to_dict()
+    assert output["FakeService"]["Community Guidelines"][datetime(
+        2020, 11, 9, 17, 30, 22)] == False
+    assert output["FakeService"]["Community Guidelines"][datetime(
+        2020, 11, 11, 16, 30, 22)] == False

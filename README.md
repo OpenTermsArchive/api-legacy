@@ -4,9 +4,12 @@
 
 ### Endpoints
 
-So far the API has two endpoints:
+So far the API has three endpoints:
 - `/first_occurence/v1/{term}` returns the first occurence of a given term for each "service" / "document_type" pair
+- `/all_occurences/v1/{term}` returns whether a term appears in a document, for each document in the dataset.
 - `/` and `/docs` is automatically generated documentation
+
+Pro tip: you can look up multiple words by separating them with a comma, for example `/first_occurence/v1/hello,hey` will find the first occurence of either of these terms.
 
 ### Running with Docker
 

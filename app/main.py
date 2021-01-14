@@ -7,7 +7,9 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 from config import CGUS_DATASET_PATH, RATE_LIMIT, BASE_PATH
+from data_finder import CGUsDataFinder
 from dataset_parser import CGUsFirstOccurenceParser, CGUsAllOccurencesParser, CGUsDataset
+from utils import parse_user_date
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(openapi_url=f"{BASE_PATH}/openapi.json",
@@ -45,3 +47,37 @@ async def list_services(request: Request):
     dataset = CGUsDataset(Path(CGUS_DATASET_PATH))
     return dataset.list_all_services_doc_types()
     
+@app.get(f"{BASE_PATH}/get_snapshot_at_date/v1/{{service}}/{{document_type}}/{{date}}")
+@limiter.limit(RATE_LIMIT)
+async def get_snapshot_at_date(request: Request, service: str, document_type: str, date: str):
+    """
+    Returns a the snapshot for a given service and a given document type as it was on a certain date.
+
+    The expected date format is YYYY-MM-DD.
+
+    Example : 
+    /get_snapshot_at_date/v1/Facebook/Terms of Service/2020-08-13
+
+    {
+        "service": "Facebook",
+        "doc_type": "Terms of Service",
+        "date": "2010-08-13T00:00:00",
+        "version_at_date": "2020-08-12T14:30:11"
+        "data": "Terms of Service. Welcome to Facebook! For messaging, voice and video, ..."
+        "next_version": "2020-09-03T12:30:05"
+    }
+
+    """
+    try:
+        finder = CGUsDataFinder(service, document_type)
+    except Exception as e:
+        return {
+            "error": str(e)
+        }
+    try:
+        parsed_date = parse_user_date(date)
+    except ValueError as e:
+        return {
+            "error": f"Issue parsing date : {str(e)}. Expected format is YYYY-MM-DD."
+        }
+    return finder.get_version_at_date(parsed_date)

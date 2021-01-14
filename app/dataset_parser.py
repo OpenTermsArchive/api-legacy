@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from collections import defaultdict
 from datetime import datetime
 from pathlib import Path, PosixPath
 import re
@@ -21,6 +22,17 @@ class CGUsDataset():
             return self.root_path.glob('**/*/*.md')
         else:
             return self.root_path.glob('**/*.md')
+        
+    def list_all_services_doc_types(self) -> list:
+        """
+        Returns all services and document types in a dataset.
+        """
+        all_service_doctypes = [{f.parts[-2]: f.parts[-1]} for f in self.root_path.glob("*/*")]
+        dict_out = defaultdict(list)
+        for d in all_service_doctypes:
+            for service, doc_type in d.items():
+                dict_out[service].append(doc_type)
+        return dict(dict_out)
 
 
 class CGUsParser(ABC):

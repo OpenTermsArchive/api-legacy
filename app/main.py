@@ -7,7 +7,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 from config import CGUS_DATASET_PATH, RATE_LIMIT, BASE_PATH
-from dataset_parser import CGUsFirstOccurenceParser, CGUsAllOccurencesParser
+from dataset_parser import CGUsFirstOccurenceParser, CGUsAllOccurencesParser, CGUsDataset
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(openapi_url=f"{BASE_PATH}/openapi.json",
@@ -35,3 +35,13 @@ async def all_occurence(request: Request, term: str):
     parser = CGUsAllOccurencesParser(Path(CGUS_DATASET_PATH), term)
     parser.run()
     return parser.to_dict()
+
+@app.get(f"{BASE_PATH}/list_services/v1/")
+@limiter.limit(RATE_LIMIT)
+async def list_services(request: Request):
+    """
+    Returns a JSON object with services as keys and a list of their available document types.
+    """
+    dataset = CGUsDataset(Path(CGUS_DATASET_PATH))
+    return dataset.list_all_services_doc_types()
+    

@@ -47,16 +47,16 @@ async def list_services(request: Request):
     dataset = CGUsDataset(Path(CGUS_DATASET_PATH))
     return dataset.list_all_services_doc_types()
     
-@app.get(f"{BASE_PATH}/get_snapshot_at_date/v1/{{service}}/{{document_type}}/{{date}}")
+@app.get(f"{BASE_PATH}/get_version_at_date/v1/{{service}}/{{document_type}}/{{date}}")
 @limiter.limit(RATE_LIMIT)
-async def get_snapshot_at_date(request: Request, service: str, document_type: str, date: str):
+async def get_version_at_date(request: Request, service: str, document_type: str, date: str):
     """
-    Returns a the snapshot for a given service and a given document type as it was on a certain date.
+    Returns a the version for a given service and a given document type as it was on a certain date.
 
     The expected date format is YYYY-MM-DD.
 
     Example : 
-    /get_snapshot_at_date/v1/Facebook/Terms of Service/2020-08-13
+    /get_version_at_date/v1/Facebook/Terms of Service/2020-08-13
 
     {
         "service": "Facebook",

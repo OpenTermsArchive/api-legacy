@@ -18,11 +18,7 @@ app = FastAPI(openapi_url=f"{BASE_PATH}/openapi.json",
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-origins = [
-    "http://localhost:4000",
-    "http://localhost",
-    "http://localhost:8080",
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

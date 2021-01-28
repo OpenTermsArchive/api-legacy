@@ -22,3 +22,4 @@ def test_parse_date_comparison():
     date = parse_user_date("2020-10-31")
     assert date >= datetime(2020, 10, 31, 9, 59, 59, 59)
     assert date >= datetime(2020, 10, 31, 23, 59, 59, 59)
+    assert date < datetime(2020, 11, 1, 0, 0, 0, 0)

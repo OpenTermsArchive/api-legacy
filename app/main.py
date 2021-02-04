@@ -50,12 +50,13 @@ async def all_occurence(request: Request, term: str):
 
 @app.get(f"{BASE_PATH}/list_services/v1/")
 @limiter.limit(RATE_LIMIT)
-async def list_services(request: Request):
+async def list_services(request: Request, multiple_versions_only: bool = False):
     """
     Returns a JSON object with services as keys and a list of their available document types.
+    multiple_versions_only: filters out service-document pairs for which only one version is recorded
     """
     dataset = CGUsDataset(Path(CGUS_DATASET_PATH))
-    return dataset.list_all_services_doc_types()
+    return dataset.list_all_services_doc_types(multiple_versions_only=multiple_versions_only)
     
 @app.get(f"{BASE_PATH}/get_version_at_date/v1/{{service}}/{{document_type}}/{{date}}")
 @limiter.limit(RATE_LIMIT)

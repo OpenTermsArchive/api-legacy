@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path, PosixPath
 import re
@@ -23,15 +23,19 @@ class CGUsDataset():
         else:
             return self.root_path.glob('**/*.md')
         
-    def list_all_services_doc_types(self) -> list:
+    def list_all_services_doc_types(self, multiple_versions_only : bool = False) -> list:
         """
         Returns all services and document types in a dataset.
         """
-        all_service_doctypes = [{f.parts[-2]: f.parts[-1]} for f in self.root_path.glob("*/*")]
+        all_service_doctypes = Counter([(f.parts[-3], f.parts[-2]) for f in self.root_path.glob("**/*.md")])
+
+        threshold = 1 if multiple_versions_only else 0
+
+        all_filtered_service_doctypes = ((key[0], key[1]) for key, count in all_service_doctypes.items() if count > threshold)
+
         dict_out = defaultdict(list)
-        for d in all_service_doctypes:
-            for service, doc_type in d.items():
-                dict_out[service].append(doc_type)
+        for service, doc_type in all_filtered_service_doctypes:
+            dict_out[service].append(doc_type)
         return dict(dict_out)
 
 

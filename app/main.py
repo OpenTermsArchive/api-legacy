@@ -45,15 +45,11 @@ async def index(request: Request):
 @app.get(f"{BASE_PATH}/first_occurence/v1/{{term}}")
 @limiter.limit(RATE_LIMIT)
 async def first_occurence(request: Request, term: str):
-<<<<<<< HEAD
     """
     Returns the date of first occurence of a given term for every (Service - Document Type) pair.
     Search for multiple terms by separating them with a comma (e.g. "rgpd,trackers,cookies").
     Search is case-insensitive. `false` is returned if the term is not found.
     """
-=======
-    """TODO"""
->>>>>>> clean: please the pylint gods + format with black
     parser = CGUsFirstOccurenceParser(Path(CGUS_DATASET_PATH), term)
     parser.run()
     return parser.to_dict()
@@ -62,15 +58,11 @@ async def first_occurence(request: Request, term: str):
 @app.get(f"{BASE_PATH}/all_occurences/v1/{{term}}")
 @limiter.limit(RATE_LIMIT)
 async def all_occurence(request: Request, term: str):
-<<<<<<< HEAD
     """
     Returns whether a version in the dataset contains a given term.
     Search for multiple terms by separating them with a comma (e.g. "rgpd,trackers,cookies").
     Search is case-insensitive.
     """
-=======
-    """TODO"""
->>>>>>> clean: please the pylint gods + format with black
     parser = CGUsAllOccurencesParser(Path(CGUS_DATASET_PATH), term)
     parser.run()
     return parser.to_dict()
@@ -114,22 +106,12 @@ async def get_version_at_date(
     """
     try:
         finder = CGUsDataFinder(service, document_type)
-<<<<<<< HEAD
     except Exception as e:
         raise HTTPException(400, str(e))
     try:
         parsed_date = parse_user_date(date)
     except ValueError as e:
-        raise HTTPException(400, f"Issue parsing date : {str(e)}. Expected format is YYYY-MM-DD.")
+        raise HTTPException(
+            400, f"Issue parsing date : {str(e)}. Expected format is YYYY-MM-DD."
+        )
     return finder.get_version_at_date(parsed_date)
-=======
-    except Exception as exception:  # pylint: disable=broad-except
-        return {"error": str(exception)}
-    try:
-        parsed_date = parse_user_date(date)
-    except ValueError as exception:
-        return {
-            "error": f"Issue parsing date : {str(exception)}. Expected format is YYYY-MM-DD."
-        }
-    return finder.get_version_at_date(parsed_date)
->>>>>>> clean: please the pylint gods + format with black

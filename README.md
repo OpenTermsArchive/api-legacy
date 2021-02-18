@@ -1,4 +1,4 @@
-# CGUs-api
+# Open Terms Archive - API
 
 ## Get Started
 

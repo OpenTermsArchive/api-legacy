@@ -1,6 +1,6 @@
 ---
-- name: Setup CGUs-api
+- name: Setup OpenTermsArchive-api
   hosts: all
 
   roles:
-    - cgus-api
+    - ota-api

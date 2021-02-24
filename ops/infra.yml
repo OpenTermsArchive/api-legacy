@@ -1,5 +1,5 @@
 ---
-- name: Setup CGUs-api infrastructure
+- name: Setup OpenTermsArchive-api infrastructure
   hosts: all
   become: yes
 

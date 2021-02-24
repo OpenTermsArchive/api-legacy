@@ -1,3 +1,0 @@
-app: cgus-api
-repository: https://github.com/ambanum/CGUs-api.git
-app_port: 8080

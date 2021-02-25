@@ -1,7 +1,7 @@
 # pylint: disable=unused-argument
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -45,7 +45,11 @@ async def index(request: Request):
 @app.get(f"{BASE_PATH}/first_occurence/v1/{{term}}")
 @limiter.limit(RATE_LIMIT)
 async def first_occurence(request: Request, term: str):
-    """TODO"""
+    """
+    Returns the date of first occurence of a given term for every (Service - Document Type) pair.
+    Search for multiple terms by separating them with a comma (e.g. "rgpd,trackers,cookies").
+    Search is case-insensitive. `false` is returned if the term is not found.
+    """
     parser = CGUsFirstOccurenceParser(Path(CGUS_DATASET_PATH), term)
     parser.run()
     return parser.to_dict()
@@ -54,7 +58,11 @@ async def first_occurence(request: Request, term: str):
 @app.get(f"{BASE_PATH}/all_occurences/v1/{{term}}")
 @limiter.limit(RATE_LIMIT)
 async def all_occurence(request: Request, term: str):
-    """TODO"""
+    """
+    Returns whether a version in the dataset contains a given term.
+    Search for multiple terms by separating them with a comma (e.g. "rgpd,trackers,cookies").
+    Search is case-insensitive.
+    """
     parser = CGUsAllOccurencesParser(Path(CGUS_DATASET_PATH), term)
     parser.run()
     return parser.to_dict()
@@ -98,12 +106,13 @@ async def get_version_at_date(
     """
     try:
         finder = CGUsDataFinder(service, document_type)
-    except Exception as exception:  # pylint: disable=broad-except
-        return {"error": str(exception)}
+    except Exception as exception:
+        raise HTTPException(400, str(exception)) from exception
     try:
         parsed_date = parse_user_date(date)
     except ValueError as exception:
-        return {
-            "error": f"Issue parsing date : {str(exception)}. Expected format is YYYY-MM-DD."
-        }
+        raise HTTPException(
+            400,
+            f"Issue parsing date : {str(exception)}. Expected format is YYYY-MM-DD.",
+        ) from exception
     return finder.get_version_at_date(parsed_date)

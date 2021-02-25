@@ -12,7 +12,7 @@ class CGUsDataset:
     Helper class for handling CGUs Versions
     """
 
-    def __init__(self, root_path: str = "../CGUs-versions"):
+    def __init__(self, root_path: str = "../OpenTermsArchive-versions"):
         self.root_path = Path(root_path)
         assert self.root_path.exists(), f"{root_path} does not exist"
         assert self.root_path.is_dir(), f"{root_path} is not a directory"

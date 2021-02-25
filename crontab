@@ -1,0 +1,1 @@
+0 1 * * * source /check_for_data.sh

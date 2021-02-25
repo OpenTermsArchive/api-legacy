@@ -1,12 +1,21 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8-slim
 
+# INSTALL REQUIREMENTS
 COPY ./requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
 RUN apt-get update -y
-RUN apt-get install curl -y
-RUN curl -LJS https://github.com/ambanum/CGUs-versions/releases/download/2021-02-15-18df44e/dataset-2021-02-15-18df44e.zip -o dataset.zip
+RUN apt-get install curl unzip cron -y
 
-RUN apt-get install unzip -y
-RUN unzip dataset.zip && mv dataset-2021-02-15-18df44e dataset
+# SETUP CRON
+COPY ./crontab /etc/cron.d/check-for-data
+RUN chmod 0644 /etc/cron.d/check-for-data
 
+# DOWNLOAD DATASET
+COPY ./download_dataset.sh /download_dataset.sh
+RUN chmod +x /download_dataset.sh
+RUN source /download_dataset.sh
+
+# COPY AND RUN APP
 COPY ./app /app
+
+CMD service cron start && /start.sh

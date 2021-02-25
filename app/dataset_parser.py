@@ -7,7 +7,7 @@ import re
 from config import DATASET_DATE_FORMAT
 
 
-class CGUsDataset():
+class CGUsDataset:
     """
     Helper class for handling CGUs Versions
     """
@@ -18,20 +18,30 @@ class CGUsDataset():
         assert self.root_path.is_dir(), f"{root_path} is not a directory"
 
     def yield_all_md(self, ignore_rootdir: bool = True) -> list:
+        """
+        Yield a list of all recorded versions (.md files) in the dataset
+        Args:
+            ignore_rootdir: used to ignore README.md when run against a repository
+        """
         if ignore_rootdir:
-            return self.root_path.glob('**/*/*.md')
-        else:
-            return self.root_path.glob('**/*.md')
-        
-    def list_all_services_doc_types(self, multiple_versions_only : bool = False) -> list:
+            return self.root_path.glob("**/*/*.md")
+        return self.root_path.glob("**/*.md")
+
+    def list_all_services_doc_types(self, multiple_versions_only: bool = False) -> list:
         """
         Returns all services and document types in a dataset.
         """
-        all_service_doctypes = Counter([(f.parts[-3], f.parts[-2]) for f in self.root_path.glob("**/*.md")])
+        all_service_doctypes = Counter(
+            [(f.parts[-3], f.parts[-2]) for f in self.root_path.glob("**/*.md")]
+        )
 
         threshold = 1 if multiple_versions_only else 0
 
-        all_filtered_service_doctypes = ((key[0], key[1]) for key, count in all_service_doctypes.items() if count > threshold)
+        all_filtered_service_doctypes = (
+            (key[0], key[1])
+            for key, count in all_service_doctypes.items()
+            if count > threshold
+        )
 
         dict_out = defaultdict(list)
         for service, doc_type in all_filtered_service_doctypes:
@@ -41,35 +51,42 @@ class CGUsDataset():
 
 class CGUsParser(ABC):
     """
-        Abstract base class for parsing a CGU dataset
+    Abstract base class for parsing a CGU dataset
     """
 
     def __init__(self, path: PosixPath):
         self.path = path
         self.dataset = CGUsDataset(self.path)
+        self.regex_term = None
+        self.output = None
 
     @abstractmethod
     def run(self):
-        pass
+        """
+        Run parser
+        """
 
     @abstractmethod
     def to_dict(self):
-        pass
+        """
+        Serialize parser in dict
+        """
 
     @staticmethod
     def _parse_name(file_path):
         """
-            Given a file path in the CGUs dataset,
-            return the service, the document_type, and the version date
+        Given a file path in the CGUs dataset,
+        return the service, the document_type, and the version date
         """
         version_date = datetime.strptime(
-            file_path.name.rstrip(".md"), DATASET_DATE_FORMAT)
+            file_path.name.rstrip(".md"), DATASET_DATE_FORMAT
+        )
         service, document_type = file_path.as_posix().split("/")[-3:-1]
         return service, document_type, version_date
 
     def _file_contains(self, file_path: Path):
-        with open(file_path, "r") as f:
-            for line in f:
+        with open(file_path, "r") as file:
+            for line in file:
                 if self.regex_term.search(line):
                     return True
         return False
@@ -77,29 +94,31 @@ class CGUsParser(ABC):
     @staticmethod
     def _to_regex(comma_separated_terms: str):
         """
-            Given a string of comma-separated terms,
-            returns a Regex matching any of these terms.
-            "hello,world,California Act" --> "hello|world|California Act"
+        Given a string of comma-separated terms,
+        returns a Regex matching any of these terms.
+        "hello,world,California Act" --> "hello|world|California Act"
         """
         return comma_separated_terms.replace(",", "|")
 
 
 class CGUsFirstOccurenceParser(CGUsParser):
+    """
+    Parser to find first occurence of a term in a dataset
+    """
 
     def __init__(self, path, terms):
         super().__init__(path)
-        self.regex_term = re.compile(
-            rf"{self._to_regex(terms)}", re.IGNORECASE)
+        self.regex_term = re.compile(rf"{self._to_regex(terms)}", re.IGNORECASE)
 
     def run(self):
         """
-            For each service provider, and for each document type,
-            return date of first occurence of a given term (or comma-separated terms), or `False`
+        For each service provider, and for each document type,
+        return date of first occurence of a given term (or comma-separated terms), or `False`
         """
         self.output = dict()
 
-        for md in self.dataset.yield_all_md(ignore_rootdir=True):
-            service, document_type, version_date = self._parse_name(md)
+        for markdown in self.dataset.yield_all_md(ignore_rootdir=True):
+            service, document_type, version_date = self._parse_name(markdown)
 
             # TODO: clean and optimize this
             if service not in self.output.keys():
@@ -107,9 +126,11 @@ class CGUsFirstOccurenceParser(CGUsParser):
 
             if document_type not in self.output[service].keys():
                 self.output[service] = {
-                    **self.output[service], **{document_type: False}}
+                    **self.output[service],
+                    **{document_type: False},
+                }
 
-            if self._file_contains(md):
+            if self._file_contains(markdown):
                 if not self.output[service][document_type]:
                     self.output[service][document_type] = version_date
                 elif version_date < self.output[service][document_type]:
@@ -118,38 +139,39 @@ class CGUsFirstOccurenceParser(CGUsParser):
     def to_dict(self):
         return self.output
 
+
 class CGUsAllOccurencesParser(CGUsParser):
+    """
+    Parser to find all occurences of a term in a dataset
+    """
 
     def __init__(self, path, terms):
         super().__init__(path)
-        self.regex_term = re.compile(
-            rf"{self._to_regex(terms)}", re.IGNORECASE)
+        self.regex_term = re.compile(rf"{self._to_regex(terms)}", re.IGNORECASE)
 
     def run(self):
         """
-            For each service provider, and for each document type,
-            return date of first occurence of a given term (or comma-separated terms), or `False`
+        For each service provider, and for each document type,
+        return date of first occurence of a given term (or comma-separated terms), or `False`
         """
         self.output = dict()
 
-        for md in self.dataset.yield_all_md(ignore_rootdir=True):
-            service, document_type, version_date = self._parse_name(md)
-
+        for markdown in self.dataset.yield_all_md(ignore_rootdir=True):
+            service, document_type, version_date = self._parse_name(markdown)
 
             # TODO: clean and optimize this
             if service not in self.output.keys():
-                self.output[service] = {
-                    document_type: {
-                        version_date: False
-                    }
-                }
+                self.output[service] = {document_type: {version_date: False}}
 
             if document_type not in self.output[service].keys():
                 self.output[service] = {
-                    **self.output[service], **{document_type: {version_date: False}}
+                    **self.output[service],
+                    **{document_type: {version_date: False}},
                 }
 
-            self.output[service][document_type][version_date] = self._file_contains(md)
+            self.output[service][document_type][version_date] = self._file_contains(
+                markdown
+            )
 
     def to_dict(self):
         return self.output

@@ -41,3 +41,9 @@ cd app
 export PYTHONPATH=.
 uvicorn main:app --reload
 ```
+
+## Develop
+
+The required setup in order to contribute to the repo:
+- `pip install -r requirements-dev.txt`
+- `python -m python_githooks`

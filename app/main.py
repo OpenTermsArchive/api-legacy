@@ -106,12 +106,13 @@ async def get_version_at_date(
     """
     try:
         finder = CGUsDataFinder(service, document_type)
-    except Exception as e:
-        raise HTTPException(400, str(e))
+    except Exception as exception:
+        raise HTTPException(400, str(exception)) from exception
     try:
         parsed_date = parse_user_date(date)
-    except ValueError as e:
+    except ValueError as exception:
         raise HTTPException(
-            400, f"Issue parsing date : {str(e)}. Expected format is YYYY-MM-DD."
-        )
+            400,
+            f"Issue parsing date : {str(exception)}. Expected format is YYYY-MM-DD.",
+        ) from exception
     return finder.get_version_at_date(parsed_date)

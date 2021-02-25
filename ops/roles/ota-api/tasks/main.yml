@@ -14,17 +14,17 @@
   community.general.docker_image:
     source: build
     build:
-      path: "/home/{{ ansible_user }}/{{ app }}"
-    name: "{{ app }}"
+      path: "/home/{{ ansible_user }}/{{ app }}{{ api_env }}"
+    name: "{{ app }}{{ api_env }}"
     force_source: yes
 
 - name: Start the container
   become: yes
   community.general.docker_container:
-    name: "{{ app }}"
-    image: "{{ app }}"
+    name: "{{ app }}{{ api_env }}"
+    image: "{{ app }}{{ api_env }}"
     restart: yes
     ports:
-    - "{{ app_port }}:80"
+      - "{{ app_port }}:80"
     env:
-      CGUS_API_ENV: "production"
+      CGUS_API_ENV: "{{ api_env }}"

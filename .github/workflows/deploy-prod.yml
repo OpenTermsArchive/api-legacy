@@ -6,7 +6,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     env:
-      CGUS_API_ENV: production
+      OTA_API_ENV: production
     steps:
       - uses: actions/checkout@v2
         with:

@@ -1,3 +1,0 @@
-app: ota-api
-  repository:https://github.com/ambanum/OpenTermsArchive-api.git
-app_port: 8080

@@ -3,4 +3,4 @@
   hosts: all
 
   roles:
-    - ota-api
+    - ota-api/github-clone

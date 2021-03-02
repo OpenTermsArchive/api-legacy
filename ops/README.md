@@ -43,6 +43,17 @@ Some useful options can be used to:
 - simulate execution with `--check`
 - see what will be changed with `--check --diff`
 
+### Full commands
+
+Remember that the deployment script will provoke a `git clone` on the server machine, so your data needs to be pushed there.
+And you can alternatively pass the `BRANCH` environment variable to test your latest branch
+```
+deploy:local:preproduction	 ansible-playbook ops/site.yml -i ops/inventories/dev.yml -e "ENV=preproduction -e "BRANCH=$(git branch --show-current)"
+deploy:local:production		 ansible-playbook ops/site.yml -i ops/inventories/dev.yml -e "ENV=production -e "BRANCH=$(git branch --show-current)"
+deploy:preproduction       	 ansible-playbook ops/site.yml -i ops/inventories/production.yml -e "ENV=preproduction
+deploy:production          	 ansible-playbook ops/site.yml -i ops/inventories/production.yml -e "ENV=production
+```
+
 ### Tags
 
 Some tags are available to refine what will happen, use them with `--tags`:

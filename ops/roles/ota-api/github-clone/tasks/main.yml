@@ -2,12 +2,16 @@
   git:
     repo: "{{ repository }}"
     dest: "/home/{{ ansible_user }}/{{ app }}"
+    version: "{{branch}}"
     force: yes
     accept_hostkey: yes
     key_file: "/home/{{ ansible_user }}/.ssh/cgus-bot-key"
   tags:
     - setup
     - update
+
+- debug:
+    msg: "Deploying '{{repository}}' for branch '{{branch}}' in folder '{{app}}' on port '{{app_port}}' and base path '{{base_path}}'"
 
 - name: Build the image
   become: yes
@@ -24,7 +28,7 @@
     name: "{{ app }}"
     image: "{{ app }}"
     restart: yes
-    ports:
-    - "{{ app_port }}:80"
     env:
-      CGUS_API_ENV: "production"
+      BASE_PATH: "{{ base_path }}"
+    ports:
+      - "{{ app_port }}:80"

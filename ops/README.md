@@ -1,8 +1,8 @@
-# CGUs-api-ops
+# OpenTermsArchive-api-ops
 
-Recipes to set up the infrastructure for the CGUs-api app and deploy it.
+Recipes to set up the infrastructure for the OpenTermsArchive-api app and deploy it.
 
-> Recettes pour mettre en place l'infrastructure et déployer l'application CGUs-api
+> Recettes pour mettre en place l'infrastructure et déployer l'application OpenTermsArchive-api
 
 ## Requirements
 
@@ -33,7 +33,7 @@ ansible-playbook ops/infra.yml
 
 Setting up the production infrastructure for publishing on the shared versions repository entails decrypting a private key managed with [Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html). It is decrypted with a password that we keep safe. You do not need to decrypt this specific private key on your own production server.
 
-- To setup `CGUs-api` app only:
+- To setup `OpenTermsArchive-api` app only:
 ```
 ansible-playbook ops/app.yml
 ```
@@ -42,6 +42,17 @@ Some useful options can be used to:
 - see what changed with `--diff`
 - simulate execution with `--check`
 - see what will be changed with `--check --diff`
+
+### Full commands
+
+Remember that the deployment script will provoke a `git clone` on the server machine, so your data needs to be pushed there.
+And you can alternatively pass the `BRANCH` environment variable to test your latest branch
+```
+deploy:local:preproduction	 ansible-playbook ops/site.yml -i ops/inventories/dev.yml -e "ENV=preproduction -e "BRANCH=$(git branch --show-current)"
+deploy:local:production		 ansible-playbook ops/site.yml -i ops/inventories/dev.yml -e "ENV=production -e "BRANCH=$(git branch --show-current)"
+deploy:preproduction       	 ansible-playbook ops/site.yml -i ops/inventories/production.yml -e "ENV=preproduction
+deploy:production          	 ansible-playbook ops/site.yml -i ops/inventories/production.yml -e "ENV=production
+```
 
 ### Tags
 
@@ -52,7 +63,7 @@ Some tags are available to refine what will happen, use them with `--tags`:
  - `restart`: to restart the app
  - `update`: to update the app (pull code, install dependencies and restart app)
 
-For example, you can update `CGUs-api` by running:
+For example, you can update `OpenTermsArchive-api` by running:
 ```
 ansible-playbook ops/app.yml --tags update
 ```

@@ -13,7 +13,7 @@ RUN chmod 0644 /etc/cron.d/check-for-data
 # DOWNLOAD DATASET
 COPY ./download_dataset.sh /download_dataset.sh
 RUN chmod +x /download_dataset.sh
-RUN source /download_dataset.sh
+RUN /bin/bash -c "source /download_dataset.sh"
 
 # COPY AND RUN APP
 COPY ./app /app

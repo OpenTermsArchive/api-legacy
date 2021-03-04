@@ -1,4 +1,5 @@
 # pylint: disable=unused-argument
+import logging
 from pathlib import Path
 import os
 
@@ -34,6 +35,16 @@ app.add_middleware(
 )
 
 
+@app.on_event("startup")
+async def startup_event():
+    """
+    Log current commit on startup.
+    """
+    logger = logging.getLogger("uvicorn.error")
+    logger.info(f"Built using commit {os.getenv('COMMIT_SHA', 'unknown')}")
+    logger.info(f"Dataset version : {os.getenv('MOST_RECENT_DATASET', 'unknown')}")
+
+
 @app.get(f"{BASE_PATH}/")
 @limiter.limit(RATE_LIMIT)
 async def index(request: Request):
@@ -43,13 +54,19 @@ async def index(request: Request):
     return RedirectResponse(f"{BASE_PATH}/docs")
 
 
-async def dataset_version(request: Request):
+@app.get(f"{BASE_PATH}/version")
+@limiter.limit(RATE_LIMIT)
+async def version(request: Request):
     """
     Return the current dataset version used by the API
     The list of dataset releases is available at
      https://github.com/ambanum/OpenTermsArchive-versions/releases
+    Also return the commit SHA on which the API was built
     """
-    return {"version": os.getenv("MOST_RECENT_DATASET", "unknown")}
+    return {
+        "dataset_version": os.getenv("MOST_RECENT_DATASET", "unknown"),
+        "api_version": os.getenv("COMMIT_SHA", "unknown"),
+    }
 
 
 @app.get(f"{BASE_PATH}/first_occurence/v1/{{term}}")

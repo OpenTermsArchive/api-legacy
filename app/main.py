@@ -1,5 +1,6 @@
 # pylint: disable=unused-argument
 from pathlib import Path
+import os
 
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,6 +41,15 @@ async def index(request: Request):
     redirect index to documentation
     """
     return RedirectResponse(f"{BASE_PATH}/docs")
+
+
+async def dataset_version(request: Request):
+    """
+    Return the current dataset version used by the API
+    The list of dataset releases is available at
+     https://github.com/ambanum/OpenTermsArchive-versions/releases
+    """
+    return {"version": os.getenv("MOST_RECENT_DATASET", "unknown")}
 
 
 @app.get(f"{BASE_PATH}/first_occurence/v1/{{term}}")

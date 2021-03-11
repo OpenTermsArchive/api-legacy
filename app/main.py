@@ -6,6 +6,7 @@ import os
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+import requests
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -60,6 +61,30 @@ async def index(request: Request):
     redirect index to documentation
     """
     return RedirectResponse(f"{BASE_PATH}/docs")
+
+
+@app.get(f"{BASE_PATH}/check_for_dataset")
+@limiter.limit(RATE_LIMIT)
+async def check_for_dataset(request: Request):
+    """
+    Checks if a new dataset is available,
+    and downloads it
+    """
+    req = requests.get(
+        "https://api.github.com/repos/ambanum/OpenTermsArchive-versions/releases/latest"
+    )
+    newest_dataset = req.json()["assets"][0]["browser_download_url"]
+    if newest_dataset != read_dataset():
+        # TODO: download dataset
+        return {
+            "status": "a new dataset is available. downloading.",
+            "most_recent_dataset": f"{newest_dataset}",
+        }
+
+    return {
+        "status": "no new dataset to download",
+        "most_recent_dataset": f"{newest_dataset}",
+    }
 
 
 @app.get(f"{BASE_PATH}/version")

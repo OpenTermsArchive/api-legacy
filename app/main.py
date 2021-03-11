@@ -50,7 +50,7 @@ async def startup_event():
     """
     logger = logging.getLogger("uvicorn.error")
     logger.info(f"Built using commit {os.getenv('COMMIT_SHA', 'unknown')}")
-    logger.info(f"Dataset version : {os.getenv('MOST_RECENT_DATASET', 'unknown')}")
+    logger.info(f"Dataset version : {read_dataset()}")
 
 
 @app.get(f"{BASE_PATH}/")

@@ -2,6 +2,7 @@
 import logging
 from pathlib import Path
 import os
+import subprocess
 
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,6 +36,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+logger = logging.getLogger("uvicorn.error")
+
 
 def read_dataset():
     """
@@ -49,7 +52,6 @@ async def startup_event():
     """
     Log current commit on startup.
     """
-    logger = logging.getLogger("uvicorn.error")
     logger.info(f"Built using commit {os.getenv('COMMIT_SHA', 'unknown')}")
     logger.info(f"Dataset version : {read_dataset()}")
 
@@ -75,7 +77,8 @@ async def check_for_dataset(request: Request):
     )
     newest_dataset = req.json()["assets"][0]["browser_download_url"]
     if newest_dataset != read_dataset():
-        # TODO: download dataset
+        process = subprocess.Popen(["/download_dataset.sh"])
+        logger.info(f"Downloading new dataset. Process pid: {process.pid}")
         return {
             "status": "a new dataset is available. downloading.",
             "most_recent_dataset": f"{newest_dataset}",

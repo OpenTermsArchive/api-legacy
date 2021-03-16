@@ -19,7 +19,7 @@ from dataset_parser import (
     CGUsAllOccurencesParser,
     CGUsDataset,
 )
-from utils import parse_user_date
+from utils import parse_user_date, parse_date_from_dataset_url
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(openapi_url=f"{BASE_PATH}/openapi.json", docs_url=f"{BASE_PATH}/docs")
@@ -99,8 +99,10 @@ async def version(request: Request):
      https://github.com/ambanum/OpenTermsArchive-versions/releases
     Also return the commit SHA on which the API was built
     """
+    dataset_url = read_dataset()
     return {
-        "dataset_version": read_dataset(),
+        "dataset_url": dataset_url,
+        "dataset_date": parse_date_from_dataset_url(dataset_url),
         "api_version": os.getenv("COMMIT_SHA", "unknown"),
     }
 

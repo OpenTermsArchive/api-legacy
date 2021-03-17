@@ -1,21 +1,25 @@
 # pylint: disable=unused-argument
+import logging
 from pathlib import Path
+import os
+import subprocess
 
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
+import requests
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from config import CGUS_DATASET_PATH, RATE_LIMIT, BASE_PATH
+from config import CGUS_DATASET_PATH, RATE_LIMIT, BASE_PATH, LAST_DATASET_PATH
 from data_finder import CGUsDataFinder
 from dataset_parser import (
     CGUsFirstOccurenceParser,
     CGUsAllOccurencesParser,
     CGUsDataset,
 )
-from utils import parse_user_date
+from utils import parse_user_date, parse_date_from_dataset_url
 
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(openapi_url=f"{BASE_PATH}/openapi.json", docs_url=f"{BASE_PATH}/docs")
@@ -32,6 +36,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+logger = logging.getLogger("uvicorn.error")
+
+
+def read_dataset():
+    """
+    Get the current dataset version stored in a file
+    """
+    dataset_file = Path(LAST_DATASET_PATH)
+    return dataset_file.read_text().strip("\n")
+
+
+@app.on_event("startup")
+async def startup_event():
+    """
+    Log current commit on startup.
+    """
+    logger.info(f"Built using commit {os.getenv('COMMIT_SHA', 'unknown')}")
+    logger.info(f"Dataset version : {read_dataset()}")
+
 
 @app.get(f"{BASE_PATH}/")
 @limiter.limit(RATE_LIMIT)
@@ -40,6 +63,48 @@ async def index(request: Request):
     redirect index to documentation
     """
     return RedirectResponse(f"{BASE_PATH}/docs")
+
+
+@app.get(f"{BASE_PATH}/check_for_dataset")
+@limiter.limit(RATE_LIMIT)
+async def check_for_dataset(request: Request):
+    """
+    Checks if a new dataset is available,
+    and downloads it
+    """
+    req = requests.get(
+        "https://api.github.com/repos/ambanum/OpenTermsArchive-versions/releases/latest"
+    )
+    newest_dataset = req.json()["assets"][0]["browser_download_url"]
+    if newest_dataset != read_dataset():
+        process = subprocess.Popen(["/download_dataset.sh"])
+        logger.info(f"Downloading new dataset. Process pid: {process.pid}")
+        return {
+            "status": "a new dataset is available. downloading.",
+            "most_recent_dataset": f"{newest_dataset}",
+        }
+
+    return {
+        "status": "no new dataset to download",
+        "most_recent_dataset": f"{newest_dataset}",
+    }
+
+
+@app.get(f"{BASE_PATH}/version")
+@limiter.limit(RATE_LIMIT)
+async def version(request: Request):
+    """
+    Return the current dataset version used by the API
+    The list of dataset releases is available at
+     https://github.com/ambanum/OpenTermsArchive-versions/releases
+    Also return the commit SHA on which the API was built
+    """
+    dataset_url = read_dataset()
+    return {
+        "dataset_url": dataset_url,
+        "dataset_date": parse_date_from_dataset_url(dataset_url),
+        "api_version": os.getenv("COMMIT_SHA", "unknown"),
+    }
 
 
 @app.get(f"{BASE_PATH}/first_occurence/v1/{{term}}")

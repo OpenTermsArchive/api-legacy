@@ -18,6 +18,8 @@
   community.general.docker_image:
     source: build
     build:
+      args:
+        COMMIT: "{{ GITHUB_SHA }}"
       path: "/home/{{ ansible_user }}/{{ app }}"
     name: "{{ app }}"
     force_source: yes

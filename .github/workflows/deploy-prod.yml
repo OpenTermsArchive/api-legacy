@@ -22,4 +22,4 @@ jobs:
       - run: pip install --upgrade setuptools
       - run: pip install ansible==2.9.11
       - run: ansible-galaxy collection install community.general:==1.3.5
-      - run: ansible-playbook ops/site.yml -i ops/inventories/production.yml -e "ENV=production GITHUB_SHA=$(GITHUB_SHA)"
+      - run: ansible-playbook ops/site.yml -i ops/inventories/production.yml -e "ENV=production"

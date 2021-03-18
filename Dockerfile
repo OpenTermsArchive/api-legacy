@@ -1,4 +1,7 @@
 FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8-slim
+ARG COMMIT=""
+LABEL commit=${COMMIT}
+ENV COMMIT_SHA=${COMMIT}
 
 # INSTALL REQUIREMENTS
 COPY ./requirements.txt /requirements.txt

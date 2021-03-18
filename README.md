@@ -3,20 +3,14 @@
 ## Get Started
 
 ### Endpoints
-
-So far the API has three endpoints:
-- `/first_occurence/v1/{term}` returns the first occurence of a given term for each "service" / "document_type" pair
-- `/all_occurences/v1/{term}` returns whether a term appears in a document, for each document in the dataset.
-- `/` and `/docs` is automatically generated documentation
-
-Pro tip: you can look up multiple words by separating them with a comma, for example `/first_occurence/v1/hello,hey` will find the first occurence of either of these terms.
+All API endpoints are automatically documented in `/docs`
 
 ### Running with Docker
 
-The easiest option if you have Docker installed as it will automatically download the data for you.
+The easiest option if you have Docker installed as it will automatically download the latest data available for you.
 
 ```sh
-docker build --no-cache --tag cgus-api:latest .
+docker build --build-arg=COMMIT=$(git rev-parse --short HEAD) --tag cgus-api:latest .
 docker run -d --name myapi -p 80:80 cgus-api:latest
 ```
 
@@ -47,3 +41,9 @@ uvicorn main:app --reload
 The required setup in order to contribute to the repo:
 - `pip install -r requirements-dev.txt`
 - `python -m python_githooks`
+
+## Update Dataset
+
+The API has a `/check_for_dataset` route that automatically finds out if a newer version of the dataset has been released [here](https://github.com/ambanum/OpenTermsArchive-versions/releases/latest) and update the API to use it.
+
+You can check which dataset release is being used by calling the `/version` endpoint.

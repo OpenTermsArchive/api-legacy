@@ -76,7 +76,15 @@ async def check_for_dataset(request: Request):
         "https://api.github.com/repos/ambanum/OpenTermsArchive-versions/releases/latest"
     )
     newest_dataset = req.json()["assets"][0]["browser_download_url"]
-    if newest_dataset != read_dataset():
+    current_dataset = read_dataset()
+
+    if current_dataset == "updating":
+        return {
+            "status": "a new dataset is being downloaded. please wait a few minutes.",
+            "most_recent_dataset": f"{newest_dataset}",
+        }
+
+    if newest_dataset != current_dataset:
         process = subprocess.Popen(["/download_dataset.sh"])
         logger.info(f"Downloading new dataset. Process pid: {process.pid}")
         return {

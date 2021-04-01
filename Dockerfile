@@ -7,14 +7,11 @@ ENV COMMIT_SHA=${COMMIT}
 COPY ./requirements.txt /requirements.txt
 RUN pip install -r /requirements.txt
 RUN apt-get update -y --fix-missing
-RUN apt-get install nano curl unzip cron rsyslog -y
+RUN apt-get install curl unzip cron -y
 
 # SETUP CRON
 COPY ./crontab /etc/cron.d/check-for-data
 RUN chmod 0644 /etc/cron.d/check-for-data
-COPY ./check_for_data.sh /check_for_data.sh
-RUN chmod +x /check_for_data.sh
-RUN crontab /etc/cron.d/check-for-data
 
 # DOWNLOAD DATASET
 COPY ./download_dataset.sh /download_dataset.sh

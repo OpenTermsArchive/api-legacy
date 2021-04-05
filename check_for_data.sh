@@ -1,8 +1,11 @@
 #!/bin/bash
-file_url=$(curl --silent "https://api.github.com/repos/ambanum/OpenTermsArchive-versions/releases/latest" | grep '"browser_download_url":' | sed -E 's/.*"([^"]+)".*/\1/')
+echo "Checking for data"
 
-if [ $file_url != $MOST_RECENT_DATASET ]; then
-  source download_dataset.sh
-else
-  :
-fi
+echo "Copying all environment variables"
+for variable_value in $(cat /proc/1/environ | sed 's/\x00/\n/g'); do
+  export $variable_value
+done
+
+curl -X "GET" \
+  "http://localhost$BASE_PATH/check_for_dataset" \
+  -H "accept: application/json"

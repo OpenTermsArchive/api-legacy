@@ -187,7 +187,7 @@ class CGUsAllOccurencesParser(CGUsParser):
         return self.output
 
 
-class CGU:
+class CGU:  # pylint: disable=too-few-public-methods
     """
     A CGU object.
         The `is_historical` argument allows for parsing a historical CGUs-versions

@@ -48,6 +48,13 @@ class CGUsDataset:
             dict_out[service].append(doc_type)
         return dict(dict_out)
 
+    def get_stats(self):
+        all_stats = dict()
+        for file_path in self.yield_all_md(ignore_rootdir=True):
+            cgu = CGU(file_path, is_historical=True)
+            all_stats[cgu.fullname] = cgu.to_dict()
+        return all_stats
+
 
 class CGUsParser(ABC):
     """
@@ -175,3 +182,42 @@ class CGUsAllOccurencesParser(CGUsParser):
 
     def to_dict(self):
         return self.output
+
+
+class CGU:
+    """
+    A CGU object.
+        The `is_historical` argument allows for parsing a historical CGUs-versions
+        dataset which has a slightly different naming convention.
+    """
+
+    def __init__(self, path: PosixPath, is_historical: bool = False):
+        self._path = path
+        self.is_historical = is_historical
+        # parse info from file path differently depending on the mode
+        if self.is_historical:
+            self.version_date = datetime.strptime(
+                self._path.name.replace(".md", ""), DATASET_DATE_FORMAT
+            )
+            self.name = self._path.as_posix().split("/")[-2]
+            self.service = self._path.as_posix().split("/")[-3]
+            self.fullname = f"{self.service} - {self.name} - {self.version_date}"
+        else:
+            self.name = self._path.name.replace(".md", "")
+            self.service = self._path.as_posix().split("/")[-2]
+            self.fullname = f"{self.service} - {self.name}"
+        self.document_type = f"{self.name}"
+
+    def to_dict(self) -> dict:
+        """
+        "Serialize" the CGU object to key/value pairs.
+        """
+        output = {
+            "service": self.service,
+            "document_type": self.document_type,
+        }
+        if self.is_historical:
+            output[
+                "date"
+            ] = self.version_date  # as string so that it can be serialized to json
+        return output

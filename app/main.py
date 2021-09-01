@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 import subprocess
 
+import pandas as pd
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -15,6 +16,7 @@ from slowapi.errors import RateLimitExceeded
 from config import CGUS_DATASET_PATH, RATE_LIMIT, BASE_PATH, LAST_DATASET_PATH
 from data_finder import CGUsDataFinder
 from dataset_parser import (
+    CGU,
     CGUsFirstOccurenceParser,
     CGUsAllOccurencesParser,
     CGUsDataset,
@@ -189,3 +191,34 @@ async def get_version_at_date(
             f"Issue parsing date : {str(exception)}. Expected format is YYYY-MM-DD.",
         ) from exception
     return finder.get_version_at_date(parsed_date)
+
+
+@app.get(f"{BASE_PATH}/graph_services/v1/")
+@limiter.limit(RATE_LIMIT)
+async def graph_services(request: Request):
+    """
+    Returns a JSON object with monthly statistics about tracked services.
+    """
+    dataset = CGUsDataset(Path(CGUS_DATASET_PATH))
+    stats = dataset.get_stats()
+    df = pd.DataFrame.from_dict(stats, orient="index")
+    df.sort_values(by="date", inplace=True)
+    df["year_month"] = df.date.dt.to_period("M")
+    over_years = df.groupby("year_month", as_index=False).agg(
+        services_tracked=("service", "unique"),
+        n_services_tracked=("service", pd.Series.nunique),
+    )
+    all_services = set()
+    num_unique_services = list()
+    for i in over_years.iterrows():
+        all_services.update(i[1].services_tracked)
+        num_unique_services.append(len(all_services))
+    over_years["n_unique_services"] = num_unique_services
+    over_years["proportion_active"] = (
+        over_years.n_services_tracked / over_years.n_unique_services
+    )
+    print(over_years)
+    over_years.year_month = over_years.year_month.astype(str)
+    return over_years[
+        ["year_month", "n_services_tracked", "n_unique_services"]
+    ].to_dict(orient="records")

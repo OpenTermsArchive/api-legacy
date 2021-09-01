@@ -16,7 +16,6 @@ from slowapi.errors import RateLimitExceeded
 from config import CGUS_DATASET_PATH, RATE_LIMIT, BASE_PATH, LAST_DATASET_PATH
 from data_finder import CGUsDataFinder
 from dataset_parser import (
-    CGU,
     CGUsFirstOccurenceParser,
     CGUsAllOccurencesParser,
     CGUsDataset,
@@ -201,10 +200,10 @@ async def graph_services(request: Request):
     """
     dataset = CGUsDataset(Path(CGUS_DATASET_PATH))
     stats = dataset.get_stats()
-    df = pd.DataFrame.from_dict(stats, orient="index")
-    df.sort_values(by="date", inplace=True)
-    df["year_month"] = df.date.dt.to_period("M")
-    over_years = df.groupby("year_month", as_index=False).agg(
+    data = pd.DataFrame.from_dict(stats, orient="index")
+    data.sort_values(by="date", inplace=True)
+    data["year_month"] = data.date.dt.to_period("M")
+    over_years = data.groupby("year_month", as_index=False).agg(
         services_tracked=("service", "unique"),
         n_services_tracked=("service", pd.Series.nunique),
     )

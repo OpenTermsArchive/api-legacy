@@ -49,6 +49,9 @@ class CGUsDataset:
         return dict(dict_out)
 
     def get_stats(self):
+        """
+        Extract basic info for every CGU in historical dataset
+        """
         all_stats = dict()
         for file_path in self.yield_all_md(ignore_rootdir=True):
             cgu = CGU(file_path, is_historical=True)

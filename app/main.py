@@ -13,7 +13,13 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from config import CGUS_DATASET_PATH, RATE_LIMIT, BASE_PATH, LAST_DATASET_PATH
+from config import (
+    CGUS_DATASET_PATH,
+    RATE_LIMIT,
+    BASE_PATH,
+    LAST_DATASET_PATH,
+    DOCTYPE_URL,
+)
 from data_finder import CGUsDataFinder
 from dataset_parser import (
     CGUsFirstOccurenceParser,
@@ -221,3 +227,13 @@ async def graph_services(request: Request):
     return over_years[
         ["year_month", "n_services_tracked", "n_unique_services"]
     ].to_dict(orient="records")
+
+
+@app.get(f"{BASE_PATH}/list_documentTypes/v1/")
+@limiter.limit(RATE_LIMIT)
+async def list_document_types(request: Request):
+    """
+    Returns a JSON object with all document types used by OTA
+    """
+    r = requests.get(DOCTYPE_URL)
+    return r.json()

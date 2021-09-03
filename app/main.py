@@ -235,5 +235,5 @@ async def list_document_types(request: Request):
     """
     Returns a JSON object with all document types used by OTA
     """
-    r = requests.get(DOCTYPE_URL)
-    return r.json()
+    req = requests.get(DOCTYPE_URL)
+    return req.json()

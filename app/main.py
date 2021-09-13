@@ -205,19 +205,19 @@ async def graph_services(request: Request):
     data["year_month"] = data.date.dt.to_period("M")
     over_years = data.groupby("year_month", as_index=False).agg(
         services_tracked=("service", "unique"),
-        n_services_tracked=("service", pd.Series.nunique),
+        n_services_active=("service", pd.Series.nunique),
     )
     all_services = set()
     num_unique_services = list()
     for i in over_years.iterrows():
         all_services.update(i[1].services_tracked)
         num_unique_services.append(len(all_services))
-    over_years["n_unique_services"] = num_unique_services
+    over_years["n_services_tracked"] = num_unique_services
     over_years["proportion_active"] = (
-        over_years.n_services_tracked / over_years.n_unique_services
+        over_years.n_services_active / over_years.n_services_tracked
     )
     print(over_years)
     over_years.year_month = over_years.year_month.astype(str)
     return over_years[
-        ["year_month", "n_services_tracked", "n_unique_services"]
+        ["year_month", "n_services_active", "n_services_tracked"]
     ].to_dict(orient="records")

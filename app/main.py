@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 import subprocess
 
+import pandas as pd
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -12,7 +13,13 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from config import CGUS_DATASET_PATH, RATE_LIMIT, BASE_PATH, LAST_DATASET_PATH
+from config import (
+    CGUS_DATASET_PATH,
+    RATE_LIMIT,
+    BASE_PATH,
+    LAST_DATASET_PATH,
+    DOCTYPE_URL,
+)
 from data_finder import CGUsDataFinder
 from dataset_parser import (
     CGUsFirstOccurenceParser,
@@ -189,3 +196,44 @@ async def get_version_at_date(
             f"Issue parsing date : {str(exception)}. Expected format is YYYY-MM-DD.",
         ) from exception
     return finder.get_version_at_date(parsed_date)
+
+
+@app.get(f"{BASE_PATH}/graph_services/v1/")
+@limiter.limit(RATE_LIMIT)
+async def graph_services(request: Request):
+    """
+    Returns a JSON object with monthly statistics about tracked services.
+    """
+    dataset = CGUsDataset(Path(CGUS_DATASET_PATH))
+    stats = dataset.get_stats()
+    data = pd.DataFrame.from_dict(stats, orient="index")
+    data.sort_values(by="date", inplace=True)
+    data["year_month"] = data.date.dt.to_period("M")
+    over_years = data.groupby("year_month", as_index=False).agg(
+        services_tracked=("service", "unique"),
+        n_services_active=("service", pd.Series.nunique),
+    )
+    all_services = set()
+    num_unique_services = list()
+    for i in over_years.iterrows():
+        all_services.update(i[1].services_tracked)
+        num_unique_services.append(len(all_services))
+    over_years["n_services_tracked"] = num_unique_services
+    over_years["proportion_active"] = (
+        over_years.n_services_active / over_years.n_services_tracked
+    )
+    print(over_years)
+    over_years.year_month = over_years.year_month.astype(str)
+    return over_years[
+        ["year_month", "n_services_active", "n_services_tracked"]
+    ].to_dict(orient="records")
+
+
+@app.get(f"{BASE_PATH}/list_documentTypes/v1/")
+@limiter.limit(RATE_LIMIT)
+async def list_document_types(request: Request):
+    """
+    Returns a JSON object with all document types used by OTA
+    """
+    req = requests.get(DOCTYPE_URL)
+    return req.json()

@@ -3,5 +3,5 @@ repository: "https://github.com/ambanum/OpenTermsArchive-api.git"
 # TODO find a way to have 2 different files, one for each ENV
 branch: "{{ BRANCH if BRANCH is defined else 'main' if ENV == 'production' else 'develop'}}"
 app_port: "{{ '7011' if ENV == 'production' else '7012' }}"
-base_path: "{{ '/api/open-terms-archive' if ENV == 'production' else '/preprod/api/open-terms-archive' }}"
+base_path: "/data/api"
 commit_sha: "{{ lookup('env', 'GITHUB_SHA') }}"

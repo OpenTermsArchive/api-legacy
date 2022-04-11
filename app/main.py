@@ -80,7 +80,7 @@ async def check_for_dataset(request: Request):
     and downloads it
     """
     req = requests.get(
-        "https://api.github.com/repos/ambanum/OpenTermsArchive-versions/releases/latest"
+        "https://api.github.com/repos/OpenTermsArchive/contrib-versions/releases/latest"
     )
     newest_dataset = req.json()["assets"][0]["browser_download_url"]
     current_dataset = read_dataset()
@@ -111,7 +111,7 @@ async def version(request: Request):
     """
     Return the current dataset version used by the API
     The list of dataset releases is available at
-     https://github.com/ambanum/OpenTermsArchive-versions/releases
+     https://github.com/OpenTermsArchive/contrib-versions/releases
     Also return the commit SHA on which the API was built
     """
     dataset_url = read_dataset()

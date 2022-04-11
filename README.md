@@ -16,6 +16,12 @@ docker run -d --name myapi -p 80:80 cgus-api:latest
 
 The API is served at `localhost`.
 
+
+### Custom command for M1
+
+```sh
+docker run --platform cgus-api --platform linux/amd64  -d --name myapi -p 80:80 cgus-api:latest
+```
 ### Running with python (for development)
 
 This API was built using `python3.8`. We suggest you use a virtual environment.
@@ -46,6 +52,6 @@ The required setup in order to contribute to the repo:
 
 ## Update Dataset
 
-The API has a `/check_for_dataset` route that automatically finds out if a newer version of the dataset has been released [here](https://github.com/ambanum/OpenTermsArchive-versions/releases/latest) and update the API to use it.
+The API has a `/check_for_dataset` route that automatically finds out if a newer version of the dataset has been released [here](https://github.com/OpenTermsArchive/contrib-versions/releases/latest) and update the API to use it.
 
 You can check which dataset release is being used by calling the `/version` endpoint.

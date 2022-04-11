@@ -24,7 +24,7 @@ def test_path_check_ok():
 def test_path_check_not_a_directory():
     with pytest.raises(AssertionError, match="is not a directory"):
         CGUsDataset(
-            root_path="tests/test_dataset/FakeService/Community Guidelines/2020-11-09--17-30-22.md"
+            root_path="tests/test_dataset/FakeService/Community Guidelines/2020-11-09T17-30-22Z.md"
         )
 
 

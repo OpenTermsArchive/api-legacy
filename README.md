@@ -46,6 +46,6 @@ The required setup in order to contribute to the repo:
 
 ## Update Dataset
 
-The API has a `/check_for_dataset` route that automatically finds out if a newer version of the dataset has been released [here](https://github.com/ambanum/OpenTermsArchive-versions/releases/latest) and update the API to use it.
+The API has a `/check_for_dataset` route that automatically finds out if a newer version of the dataset has been released [here](https://github.com/OpenTermsArchive/contrib-versions/releases/latest) and update the API to use it.
 
 You can check which dataset release is being used by calling the `/version` endpoint.

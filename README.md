@@ -16,6 +16,12 @@ docker run -d --name myapi -p 80:80 cgus-api:latest
 
 The API is served at `localhost`.
 
+
+### Custom command for M1
+
+```sh
+docker run --platform cgus-api --platform linux/amd64  -d --name myapi -p 80:80 cgus-api:latest
+```
 ### Running with python (for development)
 
 This API was built using `python3.8`. We suggest you use a virtual environment.

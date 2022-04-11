@@ -3,9 +3,7 @@ from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path, PosixPath
 import re
-
 from config import DATASET_DATE_FORMAT
-
 
 class CGUsDataset:
     """
@@ -32,7 +30,8 @@ class CGUsDataset:
         Returns all services and document types in a dataset.
         """
         all_service_doctypes = Counter(
-            [(f.parts[-3], f.parts[-2]) for f in self.root_path.glob("**/*.md")]
+            # pylint: disable=line-too-long
+            [(f.parts[-3], f.parts[-2]) for f in self.root_path.glob("**/*.md") if not f.match('README.md')]
         )
 
         threshold = 1 if multiple_versions_only else 0

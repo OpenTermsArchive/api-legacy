@@ -55,3 +55,9 @@ The required setup in order to contribute to the repo:
 The API has a `/check_for_dataset` route that automatically finds out if a newer version of the dataset has been released [here](https://github.com/OpenTermsArchive/contrib-versions/releases/latest) and update the API to use it.
 
 You can check which dataset release is being used by calling the `/version` endpoint.
+
+- - - -
+
+## License
+
+The code in this repository is distributed under the  European Union Public Licence (EUPL) v1.2.

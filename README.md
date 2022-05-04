@@ -1,5 +1,11 @@
 # Open Terms Archive - API
 
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+
+This project has been initially done to provide a backend infrastructure for [Scripta Manent](https://disinfo.quaidorsay.fr/en/open-terms-archive/scripta-manent)
+
+We will leave this project as it is for now an focus on having a more global approach to serve the data from each instance.
+
 ## Get Started
 
 ### Endpoints
@@ -55,3 +61,9 @@ The required setup in order to contribute to the repo:
 The API has a `/check_for_dataset` route that automatically finds out if a newer version of the dataset has been released [here](https://github.com/OpenTermsArchive/contrib-versions/releases/latest) and update the API to use it.
 
 You can check which dataset release is being used by calling the `/version` endpoint.
+
+- - - -
+
+## License
+
+The code in this repository is distributed under the  European Union Public Licence (EUPL) v1.2.

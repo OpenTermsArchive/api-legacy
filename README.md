@@ -1,5 +1,11 @@
 # Open Terms Archive - API
 
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+
+This project has been initially done to provide a backend infrastructure for [Scripta Manent](https://disinfo.quaidorsay.fr/en/open-terms-archive/scripta-manent)
+
+We will leave this project as it is for now an focus on having a more global approach to serve the data from each instance.
+
 ## Get Started
 
 ### Endpoints

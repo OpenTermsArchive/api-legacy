@@ -1,5 +1,5 @@
 app: "ota-api-{{ ENV }}"
-repository: "https://github.com/ambanum/OpenTermsArchive-api.git"
+repository: "https://github.com/OpenTermsArchive/api-legacy.git"
 # TODO find a way to have 2 different files, one for each ENV
 branch: "{{ BRANCH if BRANCH is defined else 'main' if ENV == 'production' else 'develop'}}"
 app_port: "{{ '7011' if ENV == 'production' else '7012' }}"

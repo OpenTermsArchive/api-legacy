@@ -14,12 +14,12 @@
     - python3-setuptools
     - python3
 
-- name: add docker GPG key
+- name: Add Docker GPG key
   apt_key:
     url: https://download.docker.com/linux/debian/gpg
     state: present
 
-- name: add docker repository to apt
+- name: Add Docker repository to apt
   apt_repository:
     repo: deb https://download.docker.com/linux/debian buster stable
     state: present

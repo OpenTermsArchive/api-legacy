@@ -1,5 +1,5 @@
 ---
-- name: Install docker dependencies
+- name: Install Docker dependencies
   apt:
     name: "{{item}}"
     state: present
@@ -24,7 +24,7 @@
     repo: deb https://download.docker.com/linux/debian buster stable
     state: present
 
-- name: install docker
+- name: Install Docker
   apt:
     name: "{{item}}"
     state: latest
@@ -34,15 +34,15 @@
     - docker-ce-cli
     - containerd.io
 
-- name: Install docker with pip
+- name: Install Docker with pip
   pip:
     name: docker
 
-- name: Install docker-compose with pip
+- name: Install Docker Compose with pip
   pip:
     name: docker-compose
 
-- name: Assure that docker is started
+- name: Assure that Docker is started
   service:
     name: docker
     state: started

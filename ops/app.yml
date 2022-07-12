@@ -2,5 +2,4 @@
 - name: Setup OpenTermsArchive-api
   hosts: all
 
-  roles:
-    - ota-api/github-clone
+- import_playbook: playbooks/apps/legacy-api.yml

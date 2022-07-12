@@ -1,0 +1,7 @@
+---
+- name: Legacy API
+  hosts: all
+  become: yes
+
+  roles:
+    - apps/legacy-api

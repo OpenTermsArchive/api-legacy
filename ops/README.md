@@ -50,8 +50,8 @@ And you can alternatively pass the `BRANCH` environment variable to test your la
 ```
 deploy:local:preproduction	 ansible-playbook ops/site.yml -i ops/inventories/dev.yml -e "ENV=preproduction" -e "BRANCH=$(git branch --show-current)"
 deploy:local:production		   ansible-playbook ops/site.yml -i ops/inventories/dev.yml -e "ENV=production" -e "BRANCH=$(git branch --show-current)"
-deploy:preproduction       	 ansible-playbook ops/site.yml -i ops/inventories/production.yml -e "ENV=preproduction
-deploy:production          	 ansible-playbook ops/site.yml -i ops/inventories/production.yml -e "ENV=production
+deploy:preproduction       	 ansible-playbook ops/site.yml -i ops/inventories/production.yml -e "ENV=preproduction"
+deploy:production          	 ansible-playbook ops/site.yml -i ops/inventories/production.yml -e "ENV=production"
 ```
 
 ### Tags

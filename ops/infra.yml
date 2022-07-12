@@ -3,4 +3,6 @@
   hosts: all
   become: yes
 
-  roles:
+- import_playbook: playbooks/infra/common.yml
+- import_playbook: playbooks/infra/git.yml
+- import_playbook: playbooks/infra/docker.yml

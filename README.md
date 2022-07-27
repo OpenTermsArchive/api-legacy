@@ -16,8 +16,8 @@ All API endpoints are automatically documented in `/docs`
 The easiest option if you have Docker installed as it will automatically download the latest data available for you.
 
 ```sh
-docker build --build-arg=COMMIT=$(git rev-parse --short HEAD) --tag cgus-api:latest .
-docker run -d --name myapi -p 80:80 cgus-api:latest
+docker build --build-arg=COMMIT=$(git rev-parse --short HEAD) --tag ota-legacy-api:latest .
+docker run -d --name myapi -p 80:80 ota-legacy-api:latest
 ```
 
 The API is served at `localhost`.
@@ -26,11 +26,16 @@ The API is served at `localhost`.
 ### Custom command for M1
 
 ```sh
-docker run --platform cgus-api --platform linux/amd64  -d --name myapi -p 80:80 cgus-api:latest
+docker run --platform ota-legacy-api --platform linux/amd64  -d --name myapi -p 80:80 ota-legacy-api:latest
 ```
 ### Running with python (for development)
 
 This API was built using `python3.8`. We suggest you use a virtual environment.
+
+```bash
+virtualenv venv
+source venv/bin/activate
+```
 
 You will also need a local copy of the dataset. By default, it is assumed to be in `./dataset` but you can always change this by editing `./app/config.py`.
 

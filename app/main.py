@@ -92,7 +92,7 @@ async def check_for_dataset(request: Request):
         }
 
     if newest_dataset != current_dataset:
-        process = subprocess.Popen(["/download_dataset.sh"])
+        process = subprocess.Popen([f"{os.getcwd()}/download_dataset.sh"])
         logger.info(f"Downloading new dataset. Process pid: {process.pid}")
         return {
             "status": "a new dataset is available. downloading.",

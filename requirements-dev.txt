@@ -13,6 +13,7 @@ configparser==5.0.1
 cryptography==3.4.6
 fastapi==0.61.2
 h11==0.11.0
+httpcore==0.15
 idna==2.10
 iniconfig==1.1.1
 isort==5.7.0

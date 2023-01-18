@@ -7,3 +7,4 @@ requests==2.25.1
 slowapi==0.1.2
 starlette==0.13.6
 uvicorn==0.12.3
+httpcore==0.15
